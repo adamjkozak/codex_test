@@ -1,6 +1,6 @@
 # Stock Topographic Map App
 
-This repository includes a simple command line tool that generates a 3D topographic map of the closing prices for a stock ticker over the last 30 days.
+This repository includes a simple command line tool that generates a 3D topographic map of a stock's closing prices with trading volume on the second axis.
 
 ## Requirements
 
