@@ -6,19 +6,29 @@ from matplotlib import cm
 
 
 def main(ticker: str):
-    data = yf.download(ticker, period="30d", interval="1d")
-    closing = data["Close"]
-    volume = data["Volume"]
-    if closing.empty:
+    data = yf.download(
+        ticker,
+        period="30d",
+        interval="1d",
+        auto_adjust=False,
+        progress=False,
+    )
+    if data.empty or "Close" not in data or "Volume" not in data:
         print(f"No data found for ticker {ticker}")
         return
 
-    # replicate closing prices and volume to create a surface
-    z = np.tile(closing.values, (len(closing), 1))
-    y = np.tile(volume.values, (len(volume), 1))
-    x = np.arange(len(closing))
-    X, _ = np.meshgrid(x, np.arange(len(closing)))
-    Y = y
+    data = data.dropna(subset=["Close", "Volume"])
+    closing = data["Close"].values
+    volume = data["Volume"].values
+    if len(closing) == 0:
+        print(f"No data found for ticker {ticker}")
+        return
+
+    n = len(closing)
+    x = np.arange(n)
+    X = np.tile(x, (n, 1))
+    Y = np.tile(volume.reshape(-1, 1), (1, n))
+    z = np.tile(closing, (n, 1))
 
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(111, projection="3d")
