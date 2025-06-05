@@ -13,16 +13,23 @@ def main(ticker: str):
         auto_adjust=False,
         progress=False,
     )
-    if data.empty or "Close" not in data or "Volume" not in data:
+
+    if data.empty:
         print(f"No data found for ticker {ticker}")
         return
 
-    data = data.dropna(subset=["Close", "Volume"])
-    closing = data["Close"].values
-    volume = data["Volume"].values
-    if len(closing) == 0:
+    # Ensure the required columns exist before processing
+    if not {"Close", "Volume"}.issubset(data.columns):
         print(f"No data found for ticker {ticker}")
         return
+
+    data = data[["Close", "Volume"]].dropna()
+    if data.empty:
+        print(f"No data found for ticker {ticker}")
+        return
+
+    closing = data["Close"].values
+    volume = data["Volume"].values
 
     n = len(closing)
     x = np.arange(n)
